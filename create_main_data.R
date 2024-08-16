@@ -1,18 +1,16 @@
-#simulation size
-#sim <- 2000
 
 effectCoefficients <- c(Stroke = 0.68, Bleed = 1.62)
-total_bleed_rate <- 0.017
+total_bleed_rate <- 0.0106
 bleed_proportions <- c(0.0018, 0.0015, 0.0073)/total_bleed_rate
 total_bleed_rate_difference <- effectCoefficients[2] * total_bleed_rate - total_bleed_rate
-stroke_rate <- c(NoNOAC = 1, NOAC = effectCoefficients[1])*0.019
+stroke_rate <- c(NoNOAC = 1, NOAC = effectCoefficients[1])*0.0105
 bleed_rate <- matrix(c(bleed_proportions * total_bleed_rate,
                       c(0.1, 0.1, 0.8)*total_bleed_rate_difference + bleed_proportions * total_bleed_rate),
                     ncol = 3,
                     byrow = TRUE,
                     dimnames = list(c("No NOAC", "NOAC"),
                                     c("ICH","Subdural","Other major bleed")))
-death_rate <- 0.085
+death_rate <- 0.0426
 afRate <- 0.075
 
 rates <- c(death_rate/12, stroke_rate[1]/12, bleed_rate[1,]/12, afRate/12)
@@ -94,8 +92,8 @@ for (s in 1:sim) {
     temp <- rep(NA, 121)
     temp[1:length(tempdata[[s]][,4][tempdata[[s]][,3] != 0])] <- tempdata[[s]][,4][tempdata[[s]][,3] != 0]
     tempdf[{{paste0("simulation",s)}}] <- temp
-    rm(temp)
 }
+rm(temp)
 tempdata <- tempdf; rm(tempdf)
 tempdata <- tempdata %>% pivot_longer(cols = starts_with("simulation"), names_to = "simulation", values_to = "QALY")
 simudata_long <- tempdata %>% mutate(Group = "No NOAC")
@@ -119,11 +117,12 @@ for (s in 1:sim) {
   temp <- rep(NA, 121)
   temp[1:length(tempdata[[s]][,4][tempdata[[s]][,3] != 0])] <- tempdata[[s]][,4][tempdata[[s]][,3] != 0]
   tempdf[{{paste0("simulation",s)}}] <- temp
-  rm(temp)
 }
+rm(temp)
 tempdata <- tempdf; rm(tempdf)
 tempdata <- tempdata %>% pivot_longer(cols = starts_with("simulation"), names_to = "simulation", values_to = "QALY")
 simudata_long <- rbind(simudata_long, tempdata %>% mutate(Group = "NOAC"))
+rm(tempdata)
 
 
 plotdata <- simudata_long %>%
@@ -131,8 +130,20 @@ plotdata <- simudata_long %>%
   group_by(Time, Group) %>% 
   summarise(QALY = mean(QALY, na.rm= T))
 
-No_data <- simudata_long %>% mutate(QALY = ifelse(is.na(QALY), ifelse(is.infinite(max(QALY, na.rm=T)), 0, max(QALY, na.rm=T)), QALY), .by = c(simulation, Group)) %>% filter(Time == 120 & Group == "No NOAC") %>% pull(QALY)
-Yes_data <- simudata_long %>% mutate(QALY = ifelse(is.na(QALY), ifelse(is.infinite(max(QALY, na.rm=T)), 0, max(QALY, na.rm=T)), QALY), .by = c(simulation, Group)) %>% filter(Time == 120 & Group == "NOAC") %>% pull(QALY)
+No_data <- simudata_long %>% 
+  mutate(QALY = ifelse(is.na(QALY), 
+                       ifelse(is.infinite(max(QALY, na.rm=T)), 0, max(QALY, na.rm=T)), 
+                       QALY), 
+         .by = c(simulation, Group)) %>% 
+  filter(Time == 120 & Group == "No NOAC") %>% 
+  pull(QALY)
+Yes_data <- simudata_long %>% 
+  mutate(QALY = ifelse(is.na(QALY), 
+                       ifelse(is.infinite(max(QALY, na.rm=T)), 0, max(QALY, na.rm=T)), 
+                       QALY), 
+         .by = c(simulation, Group)) %>% 
+  filter(Time == 120 & Group == "NOAC") %>% 
+  pull(QALY)
 
 end_val_NOAC <- plotdata[dim(plotdata)[1]-1,3]
 end_val_No_NOAC <- plotdata[dim(plotdata)[1],3]
@@ -163,7 +174,7 @@ plotdata$Group <- fct_rev(plotdata$Group)
 thinline_noac$sim    <- sim
 thinline_no_noac$sim <- sim
 plotdata$sim         <- sim
-
+rm(simudata_long)
 ############################################################################
 ############################################################################
 ###                                                                      ###
@@ -176,7 +187,9 @@ plotdata$sim         <- sim
 # Save the data frames into a list
 list_of_data_for_plot <- list(thinline_noac = thinline_noac,
                               thinline_no_noac = thinline_no_noac,
-                              plotdata = plotdata)
+                              plotdata = plotdata,
+                              data_No_NOAC = data_No_NOAC,
+                              data_Yes_NOAC = data_Yes_NOAC)
 
 
 

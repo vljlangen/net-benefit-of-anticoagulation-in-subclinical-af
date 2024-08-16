@@ -40,18 +40,16 @@ pal = c(
 
 
 # > healthState_data_Yes_NOAC$Observation %>% unique()
-# [1] "Death"                                          
-# [2] "Ischemic Stroke"                                
-# [3] "Intracerebral bleeding"                         
-# [4] "Other intracranial bleeding"                    
-# [5] "Major bleeding other than intracranial bleeding"
+# [1] "Death"                       "Ischemic stroke"            
+# [3] "Hemorrhagic stroke"          "Other intracranial bleeding"
+# [5] "Extracranial bleeding"     
 
 
 
 # Stacking order for Plots 3 & 4
-order <- c("Death", "Ischemic Stroke",
-           "Intracerebral bleeding", "Other intracranial bleeding",
-           "Major bleeding other than intracranial bleeding")
+order <- c("Death", "Ischemic stroke",
+           "Hemorrhagic stroke", "Other intracranial bleeding",
+           "Extracranial bleeding")
 
 
 # Determine the ylim value; it shall be the value higher than
@@ -89,7 +87,7 @@ p3 <- healthState_data_Yes_NOAC %>%
   theme_classic(base_size = base_size_constant, base_family = "rosario") +
   labs(x = "Time (years)") +
   scale_x_continuous(breaks = seq(0, 120, 12), limits = c(0, 120), expand = c(0, 0), labels = 0:10) +
-  scale_y_continuous(breaks = seq(0, ylim_custom, 1000), limits = c(0, ylim_custom), expand = c(0, 0)) +
+  scale_y_continuous(breaks = seq(0, 8000, 1000), limits = c(0, 8000), expand = c(0, 0)) +
   
   theme(plot.title = element_text(size = title_size, face = "bold"),
         axis.line = element_line(linewidth = 0.5),     # Set axis line width
@@ -120,7 +118,7 @@ p4 <- healthState_data_No_NOAC %>%
   theme_classic(base_size = base_size_constant, base_family = "rosario") +
   labs(x = "Time (years)") +
   scale_x_continuous(breaks = seq(0, 120, 12), limits = c(0, 120), expand = c(0, 0), labels = 0:10) +
-  scale_y_continuous(breaks = seq(0, ylim_custom, 1000), limits = c(0, ylim_custom), expand = c(0, 0)) +
+  scale_y_continuous(breaks = seq(0, 8000, 1000), limits = c(0, 8000), expand = c(0, 0)) +
   theme(plot.title = element_text(size = title_size, face = "bold"),
         axis.line = element_line(linewidth = 0.5),     # Set axis line width
         axis.ticks = element_line(linewidth = 0.5),    # Set axis tick width
@@ -165,7 +163,8 @@ panel_fig3 <- plot_grid(p3 + theme(legend.position="none"),
                         
                         legend,
                         
-                        rel_widths = c(1, 0.2, 1, 0.15, 1),
+                        #rel_widths = c(1, 0.2, 1, 1),
+                        rel_widths = c(1, 0.3, 1, 0.12, 1),
                         nrow = 1)
 
 # Display the panel
@@ -186,7 +185,7 @@ print(panel_fig3)
 # otherwise proportions get distorted.
 
 # Save as PDF with dpi specified
-ggsave("figures/figure3.pdf", width = 20, height =5, dpi = 600)
+ggsave("figures/figure3.pdf", width = 15, height =5, dpi = 600)
 
 # Load that pdf file with the magick package
 pdf_image <- magick::image_read_pdf("figures/figure3.pdf", density = 600)

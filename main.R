@@ -89,7 +89,6 @@ seed <- 46692
 decision.to.medicate <- FALSE
 
 
-
 ############################################################################
 ############################################################################
 ###                                                                      ###
@@ -124,6 +123,26 @@ print(
   (healthStates_rates[4,2]*data[5,2] + healthStates_rates[5,2]*data[9,2] + healthStates_rates[6,2]*data[13,2])/sum(healthStates_rates[4:6,2])
 )
 
+#mean QALY difference at the end of 10 follow up
+mean(Yes_data-No_data)/12
+
+#mean time in years in subclinical flimmer
+##function to calculate first occurence of death or flimmer
+time_in_sub <- function(x) {
+  cumsum(
+    cumprod(
+      1*(
+        !with(x, Observation == 1 | Observation == 7) #no death 1 and no flimmer 7
+        ) #make logic to numeric
+      ) #product is 1 until the first occurence from which after it is zero
+    )[dim(x)[1]] #sum all together, thus the last value is the time in subclinical flimmer
+  }
+mean_in_subclinical_No_NOAC <- mean(unlist(lapply(data_No_NOAC, time_in_sub)))/12
+mean_in_subclinical_Yes_NOAC <- mean(unlist(lapply(data_Yes_NOAC, time_in_sub)))/12
+cat("Mean years in sublinical flimmer\n",
+    "with NOAC: ", mean_in_subclinical_Yes_NOAC, "\n",
+    "without NOAC: ", mean_in_subclinical_No_NOAC, "\n"
+    )
 
 # # Save the created data to a file
 # save(list_of_data_for_plot,
@@ -143,6 +162,8 @@ print(
 # thinline_noac <- list_of_data_for_plot$thinline_noac
 # thinline_no_noac <- list_of_data_for_plot$thinline_no_noac
 # plotdata <- list_of_data_for_plot$plotdata
+# data_No_NOAC <- list_of_data_for_plot$data_No_NOAC
+# data_Yes_NOAC <- list_of_data_for_plot$data_Yes_NOAC
 
 # Draw and export the plot
 source("draw_plot.R")
@@ -152,8 +173,6 @@ source("draw_plot.R")
 ##                       Analyses part 1                       ##
 #################################################################
 
-#58% test
-t.test(No_data, Yes_data, alternative = "greater")
 
 #probabilistic sensitivity
 iteration <- 2000
@@ -186,30 +205,16 @@ source("probabilistic_sensitivity_analysis_create_data.R")
 # If, instead, one desires to use a merged larger data frame, the following
 # lines shall be used.
 # (Set RDS file name, used_sim and used_iteration accordingly.)
-# 
-# test <- readRDS("data/iter100_prob_sens_merged.rds")
-# used_sim <- 10000
-# used_iteration <- 2000
-# sim <- 10000
-# iteration <- 2000
 
-
-#display results
-source("probabilistic_sensitivity_analysis_display_results.R")
-
-
-
-
-# And, for Gaussian distribution, the following lines:
-
-# test <- readRDS("data/iter100_prob_sens_gaussian_merged.rds")
+# test <- readRDS("data/iter100_prob_sens_lognormal_merged.rds")
 # used_sim <- 10000
 # used_iteration <- 2000
 # sim <- 10000
 # iteration <- 2000
 # 
 # #display results
-# source("probabilistic_sensitivity_analysis_display_results_gaussian.R")
+# source("probabilistic_sensitivity_analysis_display_results_lognormal.R")
+
 
 
 
@@ -226,7 +231,7 @@ source("fig2_and_3_create_plot_data.R")
 #      file = "data/list_of_data_for_fig2_and_fig3.RData")
 # 
 # # # Load the created data from the file
-  load("data/list_of_data_for_fig2_and_fig3.RData")
+#  load("data/list_of_data_for_fig2_and_fig3.RData")
 # 
 # 
 # # Extract data frames from the above data list

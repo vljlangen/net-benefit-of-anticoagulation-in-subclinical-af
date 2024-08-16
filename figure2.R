@@ -169,7 +169,9 @@ panel_fig2 <- plot_grid(p1 + theme(legend.position="none"),
                         
                         legend,
                         
-                        rel_widths = c(1, 0.2, 1, 1),
+                        NULL,
+                        
+                        rel_widths = c(1, 0.28, 1, 1, 0.1),
                         nrow = 1)
 
 # Display the panel

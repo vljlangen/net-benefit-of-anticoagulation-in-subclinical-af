@@ -9,10 +9,35 @@
 
 
 #severity distribution
-disability_data_Yes_NOAC <- array(dim = c(121,5), dimnames = list(paste0("Time",1:121), c("Death", "Severe disability", "Moderate disability", "Mild disability", "No disability")))
-disability_data_No_NOAC <- array(dim = c(121,5), dimnames = list(paste0("Time",1:121), c("Death", "Severe disability", "Moderate disability", "Mild disability", "No disability")))
-healthState_data_Yes_NOAC <- array(dim = c(121,7), dimnames = list(paste0("Time",1:121), c("Death", "Susceptible", "Ischemic Stroke", "Intracerebral bleeding", "Other intracranial bleeding", "Major bleeding other than intracranial bleeding", "Clinical atrial fibrillation")))
-healthState_data_No_NOAC <- array(dim = c(121,7), dimnames = list(paste0("Time",1:121), c("Death", "Susceptible", "Ischemic Stroke", "Intracerebral bleeding", "Other intracranial bleeding", "Major bleeding other than intracranial bleeding", "Clinical atrial fibrillation")))
+disability_data_Yes_NOAC <- array(dim = c(121,5), 
+                                  dimnames = list(paste0("Time",1:121), c("Death", 
+                                                                          "Severe disability", 
+                                                                          "Moderate disability", 
+                                                                          "Mild disability", 
+                                                                          "No disability"))
+                                  )
+disability_data_No_NOAC <- array(dim = c(121,5), 
+                                 dimnames = list(paste0("Time",1:121), c("Death", 
+                                                                          "Severe disability", 
+                                                                          "Moderate disability", 
+                                                                          "Mild disability", 
+                                                                          "No disability")))
+healthState_data_Yes_NOAC <- array(dim = c(121,7), 
+                                   dimnames = list(paste0("Time",1:121), c("Death", 
+                                                                           "Susceptible", 
+                                                                           "Ischemic stroke", 
+                                                                           "Hemorrhagic stroke", 
+                                                                           "Other intracranial bleeding", 
+                                                                           "Extracranial bleeding", 
+                                                                           "Clinical atrial fibrillation")))
+healthState_data_No_NOAC <- array(dim = c(121,7), 
+                                  dimnames = list(paste0("Time",1:121), c("Death", 
+                                                                          "Susceptible", 
+                                                                          "Ischemic stroke", 
+                                                                          "Hemorrhagic stroke", 
+                                                                          "Other intracranial bleeding", 
+                                                                          "Extracranial bleeding", 
+                                                                          "Clinical atrial fibrillation")))
 
 suppressWarnings(
   for (t in 1:121) {
@@ -42,6 +67,13 @@ suppressWarnings(
     
   }
 )
+
+#fix the deaths
+#healthState_data.. has counted only those who have died naturally
+#disability_data.. have counted all who have died
+#thus insert disability_data.. deaths to healthState_data..
+healthState_data_No_NOAC[,1] <- disability_data_No_NOAC[,1]
+healthState_data_Yes_NOAC[,1] <- disability_data_Yes_NOAC[,1]
 
 disability_data_Yes_NOAC <- sapply(as.data.frame(disability_data_Yes_NOAC), cumsum)[,1:4]
 disability_data_Yes_NOAC <- cbind(disability_data_Yes_NOAC, Time = 0:120)

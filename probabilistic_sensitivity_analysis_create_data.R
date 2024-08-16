@@ -1,16 +1,25 @@
-prob_sensitivity_data_Yes_NOAC <- NULL
-prob_sensitivity_data_No_NOAC <- NULL
 #iteration <- 20
-#sample datapoints from a normal distribution
+########################################################################
+test <- data.frame(Stroke = numeric(iteration),
+                   Bleed = numeric(iteration),
+                   Value = numeric(iteration))
+
+###normal distribution parameters
 #stroke_mean_effect <- (0.5+0.92)/2
 #bleed_mean_effect <- (1.05 + 2.5)/2
-#stroke_sd <- (0.92 - stroke_mean_effect)/1.92
-#bleed_sd <- (2.5 - bleed_mean_effect)/1.92
+#stroke_sd <- (0.92 - stroke_mean_effect)/1.96
+#bleed_sd <- (2.5 - bleed_mean_effect)/1.96
+
+###log-normal parameters
+stroke_mean <- log(0.68)
+bleed_mean <- log(1.62)
+stroke_sd <- (log(0.92)-stroke_mean)/1.96
+bleed_sd <- (log(2.5)-bleed_mean)/1.96
 #set.seed(seed)
-for (k in 1:iteration){
-  #log-normal; sd's are experimentally fitted to the 95% CI
-  effectCoefficients <- c(Stroke = rlnorm(1, mean = 0.68, sd = 0.9),
-                          Bleed = rlnorm(1, mean = 1.62, sd = 0.95))
+for (k in 1:iteration) {
+  #log-normal distribution
+  effectCoefficients <- c(Stroke = exp(rnorm(1, mean = stroke_mean, sd = stroke_sd)),
+                          Bleed = exp(rnorm(1, mean = bleed_mean, sd = bleed_sd)))
   #normal distribution
   #effectCoefficients <- c(Stroke = rnorm(1, mean = stroke_mean_effect, sd = stroke_sd), 
   #                        Bleed = rnorm(1, mean = bleed_mean_effect, sd = bleed_sd))
@@ -45,7 +54,7 @@ for (k in 1:iteration){
     base_qaly = base_qaly, 
     initial_state = 2, #inital state is susceptible
     end.NOAC.after.bleeding = decision.to.medicate) 
-  temp_yes_NOAC <- NULL
+  temp_yes_NOAC <- numeric(sim)
   
   tempdata_no_NOAC <- qaly_sampler(
     rate = healthStates_rates_variation, 
@@ -58,22 +67,16 @@ for (k in 1:iteration){
     base_qaly = base_qaly, 
     initial_state = 2,
     end.NOAC.after.bleeding = decision.to.medicate) #inital state is susceptible
-  temp_no_NOAC <- NULL
+  temp_no_NOAC <- numeric(sim)
   for (s in 1:sim) {
-    temp_yes_NOAC[s] <- tempdata_yes_NOAC[[s]][length(tempdata_yes_NOAC[[s]][,4]),4]
-    temp_no_NOAC[s] <- tempdata_no_NOAC[[s]][length(tempdata_no_NOAC[[s]][,4]),4]
+    try(temp_yes_NOAC[s] <- tempdata_yes_NOAC[[s]][length(tempdata_yes_NOAC[[s]][,4]),4])
+      try(temp_no_NOAC[s] <- tempdata_no_NOAC[[s]][length(tempdata_no_NOAC[[s]][,4]),4])
   }
-  prob_sensitivity_data_Yes_NOAC <- rbind(prob_sensitivity_data_Yes_NOAC, c(effectCoefficients, value = mean(temp_yes_NOAC)/12))
-  prob_sensitivity_data_No_NOAC <- rbind(prob_sensitivity_data_No_NOAC, c( effectCoefficients, value = mean(temp_no_NOAC)/12))
-  print(sprintf("Done %.0f%%", k/iteration*100))
+  #prob_sensitivity_data_Yes_NOAC[k,] <- c(effectCoefficients, Value = mean(temp_yes_NOAC)/12)
+  #prob_sensitivity_data_No_NOAC[k,] <- c( effectCoefficients, Value = mean(temp_no_NOAC)/12)
+  test[k,] <- c(effectCoefficients, Value = mean(temp_yes_NOAC - temp_no_NOAC)/12)
+  print(sprintf("Done %.2f%%", k/iteration*100))
 }
-
-colnames(prob_sensitivity_data_Yes_NOAC) <- c("Stroke", "Bleed", "Value")
-colnames(prob_sensitivity_data_No_NOAC) <- c("Stroke", "Bleed", "Value")
-
-test <- data.frame(matrix(unlist(prob_sensitivity_data_Yes_NOAC), ncol=3))
-colnames(test) <- c("Stroke", "Bleed", "Value")
-test[,3] <- (unlist(prob_sensitivity_data_Yes_NOAC[,3]) - unlist(prob_sensitivity_data_No_NOAC[,3]))/12
 
 
 ############################################################################

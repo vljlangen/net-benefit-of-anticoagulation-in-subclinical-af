@@ -26,10 +26,10 @@ qaly_sampler <- function(rate = NULL, af_rate = NULL, policy = NULL, severity = 
   #loop for subclinical atrial flimmer
   #set seed for reproducibility
   cores <- detectCores()
-  cl <- makeCluster(cores[1])
+  cl <- makeCluster(cores[1]-1)
   registerDoParallel(cl)
   set.seed(seed)
-  output <- foreach (i = 1:size) %dorng% {
+  output <- foreach (i = 1:size, .errorhandling = "remove") %dorng% {
     observed_state <- initial_state
     observation <- data.frame(state = observed_state, morbidity = 5, qalm = base_qaly[1]) #observed state, disability (5 is no disability), base qaly 0.794
     af_diagnosis <- FALSE

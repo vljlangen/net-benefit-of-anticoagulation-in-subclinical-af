@@ -73,8 +73,7 @@ regular_sens_data <- interp(x = test$Stroke,
                            duplicate = "mean",
                            nx = g.size,
                            ny = g.size)
-temp2 <- lapply(as.list(regular_sens_data$x), function(x) {cbind(x, regular_sens_data$y)})
-temp2 <- do.call(rbind, temp2)
+temp2 <- do.call(rbind, lapply(as.list(regular_sens_data$x), function(x) {cbind(x, regular_sens_data$y)}))
 temp2 <- cbind(temp2, as.vector(regular_sens_data$z))
 colnames(temp2) <- c("Stroke", "Bleed", "Value")
 temp2 <- as.data.frame(temp2)
