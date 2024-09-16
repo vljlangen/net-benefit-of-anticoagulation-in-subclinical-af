@@ -20,22 +20,6 @@ p_load(ggplot2, ggthemes, tibble, dplyr, showtext, magick,
        tidyr, forcats, circlize, patchwork, gt,
        ggstream, cowplot, pdftools, foreach, doParallel, doRNG, interp)
 
-# ##################################################################
-# ##                        Load libraries for UNIX               ##
-# ##################################################################
-# 
-
-# library(pacman)
-# p_load(ggplot2, ggthemes, tibble, dplyr, showtext, tidyr, forcats)
-# p_load(patchwork, ggstream, cowplot, foreach, doParallel, doRNG)
-
-
-# # The following could not be build on UNIX
-# #library(magick)
-# #library(circlize)
-# #library(gt)
-# #library(pdftools)
-
 
 ##################################################################
 ##               How to Run All the Scripts Below               ##
@@ -199,23 +183,10 @@ source("probabilistic_sensitivity_analysis_create_data.R")
 # used_iteration <-
 # list_of_data_for_probabilistic_sensitivity_analysis$iteration
 
+ 
 
-
-
-# If, instead, one desires to use a merged larger data frame, the following
-# lines shall be used.
-# (Set RDS file name, used_sim and used_iteration accordingly.)
-
-# test <- readRDS("data/iter100_prob_sens_lognormal_merged.rds")
-# used_sim <- 10000
-# used_iteration <- 2000
-# sim <- 10000
-# iteration <- 2000
-# 
-# #display results
-# source("probabilistic_sensitivity_analysis_display_results_lognormal.R")
-
-
+#display results
+source("code_for_3d_graph.R")
 
 
 #################################################################
@@ -264,55 +235,6 @@ source("figure3.R")
 source("table2.R")
 
 
-##################################################################
-##                           Figure 4                           ##
-################################################################## 
-
-
-#Tornado plot start
-iteration <- 100
-
-#source("sensitivity_plot.R")
-
-#create data
-source("sensitivity_plot_create_data.R")
-
-# # Save the created data to a file
-# save(tornado_list,
-#      file = "data/tornado_list.RData")
-# 
-# # Load the created data from the file
-# load("data/tornado_list.RData")
-# 
-# # Extract data frames from the above data list
-# 
-# tornado_cluster_data <- 
-# tornado_list$tornado_cluster_data
-# 
-# used_sim <- 
-# tornado_list$sim
-# 
-# used_iteration <- 
-# tornado_list$iteration
-
-
-
-# If, instead, one desires to use a merged larger data frame, the following
-# lines shall be used.
-# (Set RDS file name, used_sim and used_iteration accordingly.)
-# 
-# tornado_cluster_data <- readRDS("data/iter10_tornado_merged.rds")
-# used_sim <- 10000
-# used_iteration <- 100
-
-
-
-
-
-#display results
-source("sensitivity_plot_display_results.R")
-
-
 
 #################################################################
 ##                       Analyses part 2                       ##
@@ -356,26 +278,3 @@ source("without_clinical_af_create_data.R")
 source("without_clinical_af_display_results.R")
  
 
-
-##################################################################
-##                    Circular visualization                    ##
-##################################################################
-
-
-library(circlize)
-chordDiagram(
-  t(healthStates_rates[-2,]/colSums(healthStates_rates[-2,])),
-  directional = 1,
-  direction.type = c("diffHeight", "arrows"),
-  link.arr.type = "big.arrow",
-  diffHeight = mm_h(15),
-  target.prop.height = mm_h(8),
-  annotationTrack = c("grid", "axis") 
-)
-
-circos.track(track.index = 1, panel.fun = function(x, y) {
-    circos.text(CELL_META$xcenter, CELL_META$ylim[1], CELL_META$sector.index, 
-        facing = "clockwise", niceFacing = TRUE, adj = c(0, 0.5))
-}, bg.border = NA) # here set bg.border to NA is important
-
-circos.clear()

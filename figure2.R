@@ -143,19 +143,6 @@ p2 <- disability_data_No_NOAC %>%
 
 
 
-# # Without legend
-# panel_fig2 <- plot_grid(p1 + theme(legend.position="none"),
-#                         
-#                         NULL,
-#                         
-#                         p2 + theme(legend.position="none"),
-#                         
-#                    rel_widths = c(1, 0.1, 1),
-#                    nrow = 1)
-# 
-# panel_fig2
-
-
 # Extract the legend from one of the plots
 legend <- get_legend(
   p1 + theme(legend.box.margin = margin(0, 0, 0, 0)))
