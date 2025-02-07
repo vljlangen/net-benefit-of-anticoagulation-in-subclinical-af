@@ -66,9 +66,9 @@ ylim_No_NOAC <- (sum(healthState_data_No_NOAC %>%
 
 # Determine the ylim value; it shall be the value higher than
 # the max observed value which is divisible by 250
-ylim_custom <- max(ylim_Yes_NOAC, ylim_No_NOAC) + 500
+#ylim_custom <- max(ylim_Yes_NOAC, ylim_No_NOAC) + 500
 
-
+ylim_custom <- 8000
 
 
 # Create vector for the size of simulations
@@ -87,7 +87,7 @@ p3 <- healthState_data_Yes_NOAC %>%
   theme_classic(base_size = base_size_constant, base_family = "rosario") +
   labs(x = "Time (years)") +
   scale_x_continuous(breaks = seq(0, 120, 12), limits = c(0, 120), expand = c(0, 0), labels = 0:10) +
-  scale_y_continuous(breaks = seq(0, 8000, 1000), limits = c(0, 8000), expand = c(0, 0)) +
+  scale_y_continuous(breaks = seq(0, ylim_custom, 1000), limits = c(0, ylim_custom), expand = c(0, 0)) +
   
   theme(plot.title = element_text(size = title_size, face = "bold"),
         axis.line = element_line(linewidth = 0.5),     # Set axis line width
@@ -118,7 +118,7 @@ p4 <- healthState_data_No_NOAC %>%
   theme_classic(base_size = base_size_constant, base_family = "rosario") +
   labs(x = "Time (years)") +
   scale_x_continuous(breaks = seq(0, 120, 12), limits = c(0, 120), expand = c(0, 0), labels = 0:10) +
-  scale_y_continuous(breaks = seq(0, 8000, 1000), limits = c(0, 8000), expand = c(0, 0)) +
+  scale_y_continuous(breaks = seq(0, ylim_custom, 1000), limits = c(0, ylim_custom), expand = c(0, 0)) +
   theme(plot.title = element_text(size = title_size, face = "bold"),
         axis.line = element_line(linewidth = 0.5),     # Set axis line width
         axis.ticks = element_line(linewidth = 0.5),    # Set axis tick width
@@ -185,7 +185,7 @@ print(panel_fig3)
 # otherwise proportions get distorted.
 
 # Save as PDF with dpi specified
-ggsave("figures/figure3.pdf", width = 15, height =5, dpi = 600)
+ggsave("figures/figure3.pdf", width = 15, height =8, dpi = 600)
 
 # Load that pdf file with the magick package
 pdf_image <- magick::image_read_pdf("figures/figure3.pdf", density = 600)

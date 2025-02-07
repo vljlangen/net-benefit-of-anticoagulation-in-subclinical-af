@@ -21,9 +21,9 @@ font_add_google("Rosario", family = "rosario")
 showtext_auto()
 
 # Define constants
-base_size_constant <- 20
-x_margin <- 14
-y_margin <- 16
+base_size_constant <- 24
+x_margin <- 18
+y_margin <- 22
 title_size <- 18
 
  
@@ -63,9 +63,9 @@ ylim_No_NOAC <- (sum(disability_data_No_NOAC %>%
 
 # Determine the ylim value; it shall be the value higher than
 # the max observed value which is divisible by 250
-ylim_custom <- max(ylim_Yes_NOAC, ylim_No_NOAC) + 1500
+#ylim_custom <- max(ylim_Yes_NOAC, ylim_No_NOAC) + 1500
 
-
+ylim_custom <- 6000
 
 # Create vector for the size of simulations
 simulation_annotation <- paste0("N = ", disability_data_Yes_NOAC$sim[1], " simulations")
@@ -143,6 +143,19 @@ p2 <- disability_data_No_NOAC %>%
 
 
 
+# # Without legend
+# panel_fig2 <- plot_grid(p1 + theme(legend.position="none"),
+#                         
+#                         NULL,
+#                         
+#                         p2 + theme(legend.position="none"),
+#                         
+#                    rel_widths = c(1, 0.1, 1),
+#                    nrow = 1)
+# 
+# panel_fig2
+
+
 # Extract the legend from one of the plots
 legend <- get_legend(
   p1 + theme(legend.box.margin = margin(0, 0, 0, 0)))
@@ -178,7 +191,7 @@ print(panel_fig2)
 # otherwise proportions get distorted.
 
 # Save as PDF with dpi specified
-ggsave("figures/figure2.pdf", width = 15, height =5, dpi = 600)
+ggsave("figures/figure2.pdf", width = 15, height =8, dpi = 600)
 
 # Load that pdf file with the magick package
 pdf_image <- magick::image_read_pdf("figures/figure2.pdf", density = 600)
